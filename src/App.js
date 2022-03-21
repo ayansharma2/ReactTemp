@@ -1,7 +1,7 @@
-import Home from "./Home";
+import ExpenseItem from "./ExpenseItem";
 
 function App() {
-  return <Home />;
+  return <ExpenseItem />;
 }
 
 export default App;
