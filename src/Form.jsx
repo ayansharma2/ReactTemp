@@ -4,131 +4,85 @@ class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: "",
-      date: "",
-      amount: "",
-      isFormVisible: false,
+      userName: "",
+      age: "",
+      isAgeError: false,
     };
   }
 
-  titleChangeListener = (event) => {
+  onUserNameChanged = (event) => {
     this.setState({
-      title: event.target.value,
+      userName: event.target.value,
     });
   };
 
-  dateChangeListener = (event) => {
+  onAgeChanged = (event) => {
+    console.log(event);
     this.setState({
-      date: event.target.value,
+      age: event.target.value,
     });
-  };
-  amountChangeListener = (event) => {
-    this.setState({
-      amount: event.target.value,
-    });
-  };
-
-  addExpense = () => {
-    if (
-      this.state.amount === "" ||
-      this.state.date === "" ||
-      this.state.title === ""
-    ) {
-      alert("Enter all the fields");
-    } else {
-      let item = {
-        date: new Date(this.state.date),
-        title: this.state.title,
-        amount: `$${this.state.amount}`,
-      };
-      this.props.onItemAdded(item);
+    if (Number.parseInt(event.target.value) < 0) {
       this.setState({
-        title: "",
-        date: "",
-        amount: "",
+        isAgeError: true,
+      });
+    } else {
+      this.setState({
+        isAgeError: false,
       });
     }
   };
 
-  changeVisibility = () => {
-    this.setState((prevState) => {
-      return { isFormVisible: !prevState.isFormVisible };
-    });
-  };
-
-  render() {
-    if (this.state.isFormVisible) {
-      return <this.Card />;
+  onSubmitClicked = () => {
+    if (this.state.userName.trim().length === 0) {
+      this.props.onError("UserName Can't be Empty");
+    } else if (this.state.age.trim().length === 0) {
+      this.props.onError("Age Can't be Empty");
+    } else if (Number.parseInt(this.state.age) < 0) {
+      this.props.onError("Age can't be < 0");
     } else {
-      return (
-        <div className="bg-blue-400 py-4 rounded-xl mx-48 mt-12 flex flex-col justify-center items-center">
-          <div
-            className="px-6 py-2 mx-5 hover:bg-purple-800 bg-purple-900 text-white rounded-lg cursor-pointer"
-            onClick={this.changeVisibility}
-          >
-            Add New Expense
-          </div>
-        </div>
-      );
-    }
-  }
+      let user = {
+        userName: this.state.userName,
+        age: this.state.age,
+      };
 
-  Card = () => {
+      this.props.onUserAdded(user);
+      this.setState({
+        age: "",
+        userName: "",
+      });
+    }
+  };
+  render() {
     return (
-      <div className="bg-blue-400 pb-4 rounded-xl mx-48 mt-12 flex flex-col justify-center items-end">
-        <form className="w-full">
-          <div className="grid grid-cols-2 mr-48">
-            <div className="flex flex-col px-5 py-2">
-              <label className="text-white font-bold ml-1">Title</label>
-              <input
-                type="text"
-                value={this.state.title}
-                onChange={this.titleChangeListener}
-                className="rounded-lg py-2 px-2 mt-1"
-              />
-            </div>
-            <div className="flex flex-col px-5 py-2 ">
-              <label className="text-white font-bold ml-1">Amount</label>
-              <input
-                type="number"
-                min="100"
-                value={this.state.amount}
-                onChange={this.amountChangeListener}
-                step="50"
-                className="rounded-lg py-2 px-2 mt-1"
-              />
-            </div>
-            <div className="flex flex-col px-5 py-2 ">
-              <label className="text-white font-bold ml-1">Date</label>
-              <input
-                type="date"
-                value={this.state.date}
-                onChange={this.dateChangeListener}
-                className="rounded-lg py-2 mt-1 px-2 placeholder-slate-100"
-                placeholder="yyyy:mm:dd"
-                min="2022-03-20"
-                max="2031-03-20"
-              />
-            </div>
-          </div>
-        </form>
-        <div className="flex flex-row  justify-end">
-          <div
-            className="px-6 py-2 mx-5 hover:bg-purple-800 bg-purple-900 text-white rounded-lg cursor-pointer"
-            onClick={this.changeVisibility}
+      <div className="bg-white rounded-2xl mt-10 w-2/3 px-10 py-5 flex flex-col ">
+        <label className="text-black font-bold mx-1">Username</label>
+        <input
+          value={this.state.userName}
+          onChange={this.onUserNameChanged}
+          className="border-black border-2 rounded-md mt-3 py-2 px-3"
+        />
+        <label className="text-black font-bold mx-1 mt-5">Age</label>
+        <input
+          type="number"
+          value={this.state.age}
+          onChange={this.onAgeChanged}
+          className={`border rounded-md mt-3 py-2 px-3 ${
+            this.state.isAgeError ? "border-red-900" : "border-black"
+          } focus:${
+            this.state.isAgeError ? "border-red-900" : "border-black"
+          } focus:border`}
+        />
+        <div className="justify-end flex mt-5">
+          <span
+            onClick={this.onSubmitClicked}
+            className="text-white bg-purple-700 w-fit content-end px-5 cursor-pointer py-2 rounded-md"
           >
-            Cancel
-          </div>
-          <div
-            className="px-6 py-2 mx-5 hover:bg-purple-800 bg-purple-900 text-white rounded-lg cursor-pointer"
-            onClick={this.addExpense}
-          >
-            Add Expense
-          </div>
+            Submit
+          </span>
         </div>
       </div>
     );
-  };
+  }
 }
 
 export default Form;
